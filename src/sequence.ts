@@ -1,4 +1,4 @@
-import {inject} from '@loopback/context';
+import { inject } from '@loopback/context';
 import {
   FindRoute,
   InvokeMethod,
@@ -22,13 +22,15 @@ export class MySequence implements SequenceHandler {
     @inject(SequenceActions.REJECT) public reject: Reject,
     @inject(AuthenticationBindings.AUTH_ACTION)   //导入
     protected authenticateRequest: AuthenticateFn,
-  ) {}
+  ) { }
 
   async handle(context: RequestContext) {
     try {
-      const {request, response} = context;
+      const { request, response } = context;
       const route = this.findRoute(request);
+
       await this.authenticateRequest(request);  //加入程序
+
       const args = await this.parseParams(request, route);
       const result = await this.invoke(route, args);
       this.send(response, result);
@@ -37,7 +39,7 @@ export class MySequence implements SequenceHandler {
         err.code === AUTHENTICATION_STRATEGY_NOT_FOUND ||
         err.code === USER_PROFILE_NOT_FOUND
       ) {
-        Object.assign(err, {statusCode: 401 /* Unauthorized */});
+        Object.assign(err, { statusCode: 401 });
       }
 
       this.reject(context, err);

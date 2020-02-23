@@ -1,13 +1,13 @@
-import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
-import {RestExplorerBindings,RestExplorerComponent,} from '@loopback/rest-explorer';
-import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
-import {ServiceMixin} from '@loopback/service-proxy';
+import { BootMixin } from '@loopback/boot';
+import { ApplicationConfig } from '@loopback/core';
+import { RestExplorerBindings, RestExplorerComponent, } from '@loopback/rest-explorer';
+import { RepositoryMixin } from '@loopback/repository';
+import { RestApplication } from '@loopback/rest';
+import { ServiceMixin } from '@loopback/service-proxy';
 import path from 'path';
-import {MySequence} from './sequence';
-import{AuthenticationComponent } from '@loopback/authentication'
-import {registerAuthenticationStrategy} from '@loopback/authentication';
+import { MySequence } from './sequence';
+import { AuthenticationComponent } from '@loopback/authentication'
+import { registerAuthenticationStrategy } from '@loopback/authentication';
 import { BasicAuthenticationStrategy } from './basic.authentication.strategy';
 
 export class AuthenticationApplication extends BootMixin(
@@ -26,12 +26,13 @@ export class AuthenticationApplication extends BootMixin(
     this.bind(RestExplorerBindings.CONFIG).to({
       path: '/explorer',
     });
-    
+
     this.component(RestExplorerComponent);
 
     //加载组件
     this.component(AuthenticationComponent);
-    registerAuthenticationStrategy(this, BasicAuthenticationStrategy);  //使用自定义组件
+    //使用自定义组件
+    registerAuthenticationStrategy(this, BasicAuthenticationStrategy);
 
 
     this.projectRoot = __dirname;
