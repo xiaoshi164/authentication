@@ -1,8 +1,6 @@
 import { AuthenticationStrategy } from "@loopback/authentication";
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { Request, HttpErrors } from '@loopback/rest';
-import{Strategy as BearerStrategy} from 'passport-http-bearer';
-import { inject } from "@loopback/core";
 import jwt from 'jsonwebtoken';
 import { UserRepository } from './repositories';
 import { repository } from "@loopback/repository";
@@ -17,8 +15,8 @@ export class BasicAuthenticationStrategy implements AuthenticationStrategy {
     //导入操作数据库Repository
     constructor(
         @repository(UserRepository)
-        public userRepository:UserRepository,
-    ){}
+        public userRepository: UserRepository,
+    ) { }
 
     async authenticate(request: Request): Promise<UserProfile | undefined> {
         //1.从请求头中获取数据用户账号和密码
@@ -26,9 +24,9 @@ export class BasicAuthenticationStrategy implements AuthenticationStrategy {
 
         //2.从请求头中回去Tocken
         const credentialsTomen: Credentials = this.extractCredentialsToken(request);
-        
+
         //查询从数据库
-        const user=this.userRepository.findOne({where:{username:credentialsTomen.username}}) //查询数据库
+        const user = this.userRepository.findOne({ where: { username: credentialsTomen.username } }) //查询数据库
         //两个数据作比较查询的作比较
         const userProfile = Object.assign(user);    //判断是否相
         return userProfile;
@@ -61,11 +59,11 @@ export class BasicAuthenticationStrategy implements AuthenticationStrategy {
     }
 
     //拿到请求头的Tocken,从Token中拿到账号和密码
-    extractCredentialsToken(request: Request): Credentials{
+    extractCredentialsToken(request: Request): Credentials {
         var creds: Credentials;
         //拿到请求头
-        let authHeaderValue=request.headers.authorization;
-        
+        let authHeaderValue = request.headers.authorization;
+
         if (!authHeaderValue) {
             throw new HttpErrors.Unauthorized('没有请求头');
         }
@@ -75,22 +73,22 @@ export class BasicAuthenticationStrategy implements AuthenticationStrategy {
 
         const parts = authHeaderValue.split(' ');   //拆分获取到token
         const token = parts[1];                     //拿到token
-        
+
         /***问题****/
-        const user1=jwt.verify(token,'TheVerySecurePrivateKey');
-        
+        const user1 = jwt.verify(token, 'TheVerySecurePrivateKey');
+
         console.log(user1); console.log(typeof user1);
-        
-        // creds ={username:user1.username, password:user1.password}   
+
+        // creds ={username:user1.username, password:user1.password}
 
         /*****解决****/
-        const user=JSON.stringify(jwt.verify(token,'TheVerySecurePrivateKey'));
+        const user = JSON.stringify(jwt.verify(token, 'TheVerySecurePrivateKey'));
         const obj = JSON.parse(user);
-        
+
         console.log(obj); console.log(typeof obj);
-        
-        creds ={username:obj.username, password:obj.password}       //转回对象
-        
+
+        creds = { username: obj.username, password: obj.password }       //转回对象
+
         return creds;
     }
 }
